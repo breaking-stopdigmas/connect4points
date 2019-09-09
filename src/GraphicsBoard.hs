@@ -34,6 +34,7 @@ drawBoard' b = pictures [translate' x y $ convColor (board ! (x, y)) $ gameCoin 
   where
     board = Board.board b
 
+-- função que desenha a board e os circulos que representam as opções de seleção
 drawBoard :: Board.Board -> IO Picture
 drawBoard b@(Board.Board _ _ _ Board.Empty)  = return $ drawBoard' b
 drawBoard b@(Board.Board _ _ _ Board.Red)    = return $ pictures [color transRed $ rectangleSolid 700 600

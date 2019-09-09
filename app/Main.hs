@@ -5,11 +5,12 @@ import System.Exit
 import Graphics.Gloss hiding (color)
 import Graphics.Gloss.Interface.IO.Game hiding (color)
 
-import AI (GamePosition)
 import Board hiding (Color)
 import GraphicsBoard (drawBoard)
 import Player
+import AI (GamePosition)
 
+-- função que captura os movimentos dos players
 moveFunc :: (Player Column Board) -> (Player Column Board) -> Event -> Board -> IO Board
 moveFunc player1 player2 (EventKey (MouseButton LeftButton) Up _ (coordX, _)) b@Board{ winner = Empty } = let col = ceiling $ (coordX + 350) / 100
                                                                                                               moves = possibleMoves b
@@ -34,37 +35,40 @@ moveFunc' moves player1 player2 b col =
 timeFunc :: Float -> Board -> IO Board
 timeFunc _ b = return b
 
+-- define as dimensões da tela e sua grade de divisão
 window :: Display
 window = InWindow "Connect 4 !!" (700, 600) (10, 10)
 
+-- define a cor do fundo da tela
 background :: Color
 background = dark blue
 
+-- Função para escolhar do tipo dos players(1 e 2).
 choosePlayer :: GamePosition b => Int -> IO (Player a b)
-choosePlayer i = do putStrLn $ "Choose Player " ++ (show i) ++ ":"
+choosePlayer i = do putStrLn $ "Choose Player " ++ (show i) ++ ":" -- indica qual player está sendo selecionado
                     putStrLn "1. Human"
-                    putStrLn "2. Noob Computer"
-                    putStrLn "3. Easy Computer"
-                    putStrLn "4. Normal Computer"
-                    putStrLn "5. Hard Computer"
+                    putStrLn "2. Computer"
                     putStrLn "Enter Choice: "
-                    choiceString <- getLine
-                    let choice = read choiceString
-                    case choice of
+                    choiceString <- getLine -- pega o valor digitado no teclado
+                    let choice = read choiceString -- choice recebe a leitura da choiceString
+                    case choice of -- tratamento de qual o retorno será da função em detrimento do valor de entrada
                       1 -> return ioplayer
                       2 -> return randplayer
-                      3 -> return (negmaxplayer 1)
-                      4 -> return (negmaxplayer 3)
-                      5 -> return (negmaxplayer 5)
                       _ -> do putStrLn $ "You have entered an invalid choice: " ++ (show choice)
                               putStrLn "Please choose one of the possible choices."
                               choosePlayer i
 
 begin :: IO ()
 begin = do
+  -- função para seleção do jogador
   player1 <- choosePlayer 1
   player2 <- choosePlayer 2
+  -- Função da Graphics.Gloss para montar a tela e que responde às mudanças conforme as entradas que recebe
   playIO window background 1 initialBoard drawBoard (moveFunc player1 player2) timeFunc
 
+-- A função main recebe uma ação de I/O é alguma coisa que, quando executada, 
+-- irá realizar uma ação com um efeito colateral (que é usualmente ler do 
+-- dispositivo de entrada ou imprimir algo na tela) e irá também conter algum 
+-- tipo de valor de retorno dentro dela
 main :: IO ()
 main = begin

@@ -30,23 +30,24 @@ type Column = Int
 type Row = Int
 type Coords = (Column, Row)
 
--- Enumeration for the 3 Colors and 4 victory possibilities
+-- definindo 3 possibilidades de cores
 data Color = Empty | Red | Yellow | Both deriving (Eq, Show)
 
--- Board is just a 2 Dimensional List with heights
+-- definindo estrutura da Board (tela)
 data Board = Board { board :: (Map Coords Color)
                    , heights :: (Map Column Row)
                    , color :: Color
                    , winner :: Color
                    }
 
+-- função que constroi board  
 initialBoard  = Board { board = (Map.fromList [ ((x, y), Empty) | x <- [1..columns], y <- [1..rows]])
                       , heights = (Map.fromList [ (col, 0) | col <- [1..columns]])
                       , color = Red
                       , winner = Empty
                       }
 
--- Returns Columns whose topmost row is still not filled
+-- Retorna colunas cuja linha superior ainda não foi preenchida
 possibleMoves :: Board -> [Column]
 possibleMoves b
   | checkWin b = []
@@ -54,7 +55,7 @@ possibleMoves b
                 where
                   heights' = heights b
 
--- Update the Board
+-- Atualiza a Board
 makeMove :: Board -> Column -> Board
 makeMove b@Board{ heights = heights', color = c, board = board' } col =
   let posMoves = possibleMoves b
@@ -70,7 +71,7 @@ opp c
   | c == Red = Yellow
   | c == Yellow = Red
 
-
+-- captura círculos selecionados
 verticals :: Board -> [[Color]]
 verticals b = [ [board b ! (x, y + i) | i <- [0..3]] | x <- [1..columns], y <- [1..(rows - 3)]]
 
@@ -83,12 +84,12 @@ rdiags b = [ [board b ! (x + i, y + i) | i <- [0..3]] | x <- [1..(columns - 3)],
 ldiags :: Board -> [[Color]]
 ldiags b = [ [board b ! (x + i, y - i) | i <- [0..3]] | x <- [1..(columns - 3)], y <- [4..rows]]
 
--- Check if a player of particular color has won
+-- Verifique se um jogador ganhou
 checkWin :: Board -> Bool
 checkWin board = or [f board | f <- [checkWinCol, checkWinRow, checkWinDiagRight, checkWinDiagLeft]]
 
--- check if any quad exists such that all elements of a quad are of the opposite color.
--- If yes then the other player won and reached this state
+-- verifica se existe algum quad, de modo que todos os elementos de um quad sejam da cor oposta.
+-- Se sim, o outro jogador venceu e atingiu este estado
 checkWin' :: (Board -> [[Color]]) -> Board -> Bool
 checkWin' f b = or $ map (and . map ((==) (opp $ color b))) $ f b
 
@@ -104,11 +105,11 @@ checkWinDiagRight = checkWin' rdiags
 checkWinDiagLeft :: Board -> Bool
 checkWinDiagLeft = checkWin' ldiags
 
--- Calculate value of a particular board w.r.t to Color
+-- Avalia se houve alguma sequencia dentro da 4 possibilidades
 valuation :: Board -> Int
 valuation board = sum [f board | f <- [valuationCol, valuationRow, valuationDiagRight, valuationDiagLeft]]
 
--- Calculate score of each quad set and return the sum
+-- Calcula a pontuação de cada conjunto de quad e retornar a soma
 valuation' :: (Board -> [[Color]]) -> Board -> Int
 valuation' f b = sum $ map (scoreQuad $ color b) $ f b
 
