@@ -1,6 +1,70 @@
 module Main where
 
-import Lib
+import System.Exit
+
+import Graphics.Gloss hiding (color)
+import Graphics.Gloss.Interface.IO.Game hiding (color)
+
+import AI (GamePosition)
+import Board hiding (Color)
+import GraphicsBoard (drawBoard)
+import Player
+
+moveFunc :: (Player Column Board) -> (Player Column Board) -> Event -> Board -> IO Board
+moveFunc player1 player2 (EventKey (MouseButton LeftButton) Up _ (coordX, _)) b@Board{ winner = Empty } = let col = ceiling $ (coordX + 350) / 100
+                                                                                                              moves = possibleMoves b
+                                                                                                          in if null moves
+                                                                                                             then return b { winner = Both }  -- draw
+                                                                                                             else moveFunc' moves player1 player2 b col
+moveFunc _ _ (EventKey (MouseButton LeftButton) Up _ _) _ = exitSuccess
+moveFunc _ _ (EventKey (SpecialKey KeyEsc) Up _ _) _      = die "Game Aborted"
+moveFunc _ _ (EventKey (Char 'q') Up _ _) _               = die "Game Aborted"
+moveFunc _ _ _ b                                          = return b
+
+moveFunc' moves player1 player2 b col =
+    do
+        let player = if (color b == Red) then player1 else player2
+        move <- player moves b (Just col)
+        let nBoard = makeMove b move
+            hasWon = checkWin nBoard
+        if hasWon
+        then return nBoard { winner = color b }
+        else return nBoard
+
+timeFunc :: Float -> Board -> IO Board
+timeFunc _ b = return b
+
+window :: Display
+window = InWindow "Connect 4 !!" (700, 600) (10, 10)
+
+background :: Color
+background = dark blue
+
+choosePlayer :: GamePosition b => Int -> IO (Player a b)
+choosePlayer i = do putStrLn $ "Choose Player " ++ (show i) ++ ":"
+                    putStrLn "1. Human"
+                    putStrLn "2. Noob Computer"
+                    putStrLn "3. Easy Computer"
+                    putStrLn "4. Normal Computer"
+                    putStrLn "5. Hard Computer"
+                    putStrLn "Enter Choice: "
+                    choiceString <- getLine
+                    let choice = read choiceString
+                    case choice of
+                      1 -> return ioplayer
+                      2 -> return randplayer
+                      3 -> return (negmaxplayer 1)
+                      4 -> return (negmaxplayer 3)
+                      5 -> return (negmaxplayer 5)
+                      _ -> do putStrLn $ "You have entered an invalid choice: " ++ (show choice)
+                              putStrLn "Please choose one of the possible choices."
+                              choosePlayer i
+
+begin :: IO ()
+begin = do
+  player1 <- choosePlayer 1
+  player2 <- choosePlayer 2
+  playIO window background 1 initialBoard drawBoard (moveFunc player1 player2) timeFunc
 
 main :: IO ()
-main = someFunc
+main = begin
