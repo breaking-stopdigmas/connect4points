@@ -1,8 +1,8 @@
 name:                connect4points
 version:             0.1.0.0
-github:              "githubuser/connect4points"
+github:              "breaking-stopdigmas/connect4points"
 license:             BSD3
-author:              Mateus Augusto, GUilherme e GUilherme
+author:              "Mateusas3s, GuiMarques98, guilhermedelyra"
 maintainer:          "example@example.com"
 copyright:           "2019 Yash Srivastav <https://github.com/yashsriv/haskell-connect-4>"
 
