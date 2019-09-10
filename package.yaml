@@ -1,8 +1,8 @@
 name:                connect4points
 version:             0.1.0.0
-github:              "githubuser/connect4points"
+github:              "breaking-stopdigmas/connect4points"
 license:             BSD3
-author:              "Author name here"
+author:              "Mateusas3s, GuiMarques98, guilhermedelyra"
 maintainer:          "example@example.com"
 copyright:           "2019 Author name here"
 
@@ -17,7 +17,7 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/connect4points#readme>
+description:         Please see the README on GitHub at <https://github.com/breaking-stopdigmas/connect4points#connect4points>
 
 dependencies:
 - base >= 4.7 && < 5
