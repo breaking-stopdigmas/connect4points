@@ -71,7 +71,7 @@ opp c
   | c == Red = Yellow
   | c == Yellow = Red
 
--- captura círculos selecionados
+-- captura a área selecionada e mapeia em 4 tipos de listas
 verticals :: Board -> [[Color]]
 verticals b = [ [board b ! (x, y + i) | i <- [0..3]] | x <- [1..columns], y <- [1..(rows - 3)]]
 

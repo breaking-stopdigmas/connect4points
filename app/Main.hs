@@ -15,7 +15,7 @@ moveFunc :: (Player Column Board) -> (Player Column Board) -> Event -> Board -> 
 moveFunc player1 player2 (EventKey (MouseButton LeftButton) Up _ (coordX, _)) b@Board{ winner = Empty } = let col = ceiling $ (coordX + 350) / 100
                                                                                                               moves = possibleMoves b
                                                                                                           in if null moves
-                                                                                                             then return b { winner = Both }  -- draw
+                                                                                                             then return b { winner = Both } 
                                                                                                              else moveFunc' moves player1 player2 b col
 moveFunc _ _ (EventKey (MouseButton LeftButton) Up _ _) _ = exitSuccess
 moveFunc _ _ (EventKey (SpecialKey KeyEsc) Up _ _) _      = die "Game Aborted"
